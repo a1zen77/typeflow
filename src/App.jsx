@@ -194,7 +194,7 @@ function App() {
 
         </main>
 
-        <footer className="text-center py-6 text-txt-untyped text-sm font-mono">
+        <footer className="text-center py-6 text-txt-muted text-sm font-mono">
           typeflow &mdash; built with react + vite
         </footer>
       </div>

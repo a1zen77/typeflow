@@ -100,17 +100,17 @@ function Results({ data, onRetry, onChangeMode }) {
       </div>
 
       {/* Keyboard hints */}
-      <div className="flex items-center justify-center gap-3 text-txt-untyped text-xs font-mono">
+      <div className="flex items-center justify-center gap-3 text-txt-sub text-xs font-mono">
         <span>
-          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">tab</kbd>
-          <span className="mx-1 text-txt-untyped/40">+</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">enter</kbd>
-          <span className="ml-1.5 text-txt-untyped/50">retry</span>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/20 text-txt-sub text-[10px]">tab</kbd>
+          <span className="mx-1 text-txt-muted/60">+</span>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/20 text-txt-sub text-[10px]">enter</kbd>
+          <span className="ml-1.5 text-txt-sub">retry</span>
         </span>
-        <span className="text-txt-untyped/30">·</span>
+        <span className="text-txt-muted/40">·</span>
         <span>
-          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">esc</kbd>
-          <span className="ml-1.5 text-txt-untyped/50">back to menu</span>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/20 text-txt-sub text-[10px]">esc</kbd>
+          <span className="ml-1.5 text-txt-sub">back to menu</span>
         </span>
       </div>
 

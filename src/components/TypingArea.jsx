@@ -87,7 +87,7 @@ function TypingArea({ words, charState, currentWord, currentChar, isFinished, on
       </div>
 
       {!isFinished && (
-        <p className="mt-5 text-center text-txt-untyped text-xs font-mono tracking-wide">
+        <p className="mt-5 text-center text-txt-sub text-xs font-mono tracking-wide">
           start typing &nbsp;·&nbsp; esc to reset
         </p>
       )}

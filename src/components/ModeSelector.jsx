@@ -95,12 +95,12 @@ function ModeSelector({ modes, selected, onSelect, onStart }) {
 
       {/* Keyboard hints */}
       <div className="flex flex-col items-center gap-1.5">
-        <p className="text-txt-untyped text-xs font-mono">
+        <p className="text-txt-sub text-xs font-mono">
           or just start typing to begin immediately
         </p>
-        <div className="flex items-center gap-2 text-txt-untyped text-xs font-mono">
+        <div className="flex items-center gap-2 text-txt-sub text-xs font-mono">
           <KbdHint keys={['tab', 'enter']} label="retry" />
-          <span className="text-txt-untyped/40">·</span>
+          <span className="text-txt-muted/50">·</span>
           <KbdHint keys={['esc']} label="reset" />
         </div>
       </div>
@@ -114,13 +114,13 @@ function KbdHint({ keys, label }) {
     <span className="flex items-center gap-1">
       {keys.map((k, i) => (
         <span key={k} className="flex items-center gap-1">
-          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-txt-untyped text-[10px] font-mono">
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/20 text-txt-sub text-[10px] font-mono">
             {k}
           </kbd>
-          {i < keys.length - 1 && <span className="text-txt-untyped/40">+</span>}
+          {i < keys.length - 1 && <span className="text-txt-muted/60">+</span>}
         </span>
       ))}
-      <span className="text-txt-untyped/50 ml-1">{label}</span>
+      <span className="text-txt-sub ml-1">{label}</span>
     </span>
   )
 }
