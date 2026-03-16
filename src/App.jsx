@@ -122,6 +122,10 @@ function App() {
     let tabPressed = false
 
     const handleKey = (e) => {
+      if (e.key === 'Escape') {
+        handleBackToMenu()
+        return
+      }
       if (e.key === 'Tab') {
         e.preventDefault()
         tabPressed = true
@@ -135,7 +139,7 @@ function App() {
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [screen, handleRetry])
+  }, [screen, handleRetry, handleBackToMenu])
 
   // Cleanup
   useEffect(() => {

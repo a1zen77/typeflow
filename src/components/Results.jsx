@@ -110,7 +110,7 @@ function Results({ data, onRetry, onChangeMode }) {
         <span className="text-txt-untyped/30">·</span>
         <span>
           <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">esc</kbd>
-          <span className="ml-1.5 text-txt-untyped/50">menu</span>
+          <span className="ml-1.5 text-txt-untyped/50">back to menu</span>
         </span>
       </div>
 
