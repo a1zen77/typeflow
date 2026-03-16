@@ -64,4 +64,18 @@
     pointer-events: none;
     z-index: 0;
   }
+
+  /* Prevent flash of unstyled words on first render */
+  .typing-font span {
+    transition: color 60ms ease;
+  }
+
+  /* Hide scrollbar universally */
+  .overflow-y-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .overflow-y-auto::-webkit-scrollbar {
+    display: none;
+  }
 }

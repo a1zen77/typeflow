@@ -147,7 +147,7 @@ function App() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header mode={mode} screen={screen} onBackToMenu={handleBackToMenu} />
 
-        <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+        <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12">
 
           {screen === SCREENS.SELECT && (
             <ModeSelector
@@ -160,7 +160,7 @@ function App() {
           )}
 
           {screen === SCREENS.TEST && (
-            <div className="animate-fade-up w-full max-w-3xl">
+            <div className="animate-fade-up w-full max-w-3xl px-2 sm:px-0">
               <StatsBar
                 wpm={liveWpm}
                 accuracy={liveAcc}
