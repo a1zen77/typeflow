@@ -1,7 +1,10 @@
 import WpmChart from './WpmChart.jsx'
+import { getPersonalBest } from '../utils/storage.js'
 
 function Results({ data, onRetry, onChangeMode }) {
   const { wpm, accuracy, errors, snapshots, duration, isNewPB } = data
+
+  const prevPB = isNewPB ? wpm : getPersonalBest(duration)
 
   const durationLabel = {
     15:  '15 seconds',
@@ -13,25 +16,51 @@ function Results({ data, onRetry, onChangeMode }) {
   return (
     <div className="animate-fade-up w-full max-w-2xl mx-auto flex flex-col gap-8">
 
-      {/* Header */}
+      {/* New PB banner */}
+      {isNewPB && (
+        <div className="flex items-center justify-center gap-3 px-5 py-3 rounded-xl bg-accent-gold/8 border border-accent-gold/25">
+          <span className="w-2 h-2 rounded-full bg-accent-gold animate-pulse-soft" />
+          <span className="text-accent-gold font-mono text-sm">
+            new personal best for {durationLabel}!
+          </span>
+        </div>
+      )}
+
+      {/* Main WPM display */}
       <div className="text-center space-y-1">
-        {isNewPB && (
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-gold/10 border border-accent-gold/30 text-accent-gold text-xs font-mono mb-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-gold animate-pulse-soft" />
-            new personal best
-          </div>
-        )}
-        <h2 className="text-txt-bright font-sans font-medium text-3xl tracking-tight">
-          {wpm} <span className="text-txt-muted text-xl">wpm</span>
-        </h2>
+        <div className="flex items-baseline justify-center gap-3">
+          <span className="text-txt-bright font-mono font-medium text-6xl tabular-nums">
+            {wpm}
+          </span>
+          <span className="text-txt-muted font-mono text-2xl">wpm</span>
+        </div>
         <p className="text-txt-muted font-mono text-sm">{durationLabel} test</p>
+
+        {/* Previous PB comparison */}
+        {prevPB !== null && !isNewPB && (
+          <p className="text-txt-untyped font-mono text-xs mt-1">
+            best: {prevPB} wpm
+            {wpm >= prevPB - 3 && wpm < prevPB && (
+              <span className="text-accent-gold/70 ml-2">so close!</span>
+            )}
+          </p>
+        )}
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-3">
-        <StatCard label="wpm"      value={wpm}           />
-        <StatCard label="accuracy" value={`${accuracy}%`} highlight={accuracy >= 95} />
-        <StatCard label="errors"   value={errors}         warn={errors > 10} />
+        <StatCard label="wpm"      value={wpm} />
+        <StatCard
+          label="accuracy"
+          value={`${accuracy}%`}
+          highlight={accuracy >= 95}
+          warn={accuracy < 80}
+        />
+        <StatCard
+          label="errors"
+          value={errors}
+          warn={errors > 10}
+        />
       </div>
 
       {/* WPM chart */}
@@ -42,7 +71,7 @@ function Results({ data, onRetry, onChangeMode }) {
         <WpmChart snapshots={snapshots} />
       </div>
 
-      {/* Action buttons */}
+      {/* Actions */}
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={onRetry}
@@ -70,10 +99,20 @@ function Results({ data, onRetry, onChangeMode }) {
         </button>
       </div>
 
-      {/* Keyboard hint */}
-      <p className="text-center text-txt-untyped text-xs font-mono">
-        tab + enter to retry quickly
-      </p>
+      {/* Keyboard hints */}
+      <div className="flex items-center justify-center gap-3 text-txt-untyped text-xs font-mono">
+        <span>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">tab</kbd>
+          <span className="mx-1 text-txt-untyped/40">+</span>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">enter</kbd>
+          <span className="ml-1.5 text-txt-untyped/50">retry</span>
+        </span>
+        <span className="text-txt-untyped/30">·</span>
+        <span>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/10 text-[10px]">esc</kbd>
+          <span className="ml-1.5 text-txt-untyped/50">menu</span>
+        </span>
+      </div>
 
     </div>
   )
@@ -81,7 +120,7 @@ function Results({ data, onRetry, onChangeMode }) {
 
 function StatCard({ label, value, highlight, warn }) {
   return (
-    <div className="flex flex-col items-center gap-1 bg-bg-surface border border-white/5 rounded-xl py-5">
+    <div className="flex flex-col items-center gap-1.5 bg-bg-surface border border-white/5 rounded-xl py-5">
       <span className={`text-3xl font-mono font-medium tabular-nums
         ${highlight ? 'text-accent-correct' :
           warn      ? 'text-accent-error'   :

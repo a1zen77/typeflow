@@ -151,6 +151,7 @@ function App() {
 
           {screen === SCREENS.SELECT && (
             <ModeSelector
+              key={screen} 
               modes={MODES}
               selected={mode}
               onSelect={handleSelectMode}
