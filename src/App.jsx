@@ -1,8 +1,11 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Header from './components/Header.jsx'
 import ModeSelector from './components/ModeSelector.jsx'
 import TypingArea from './components/TypingArea.jsx'
+import StatsBar from './components/StatsBar.jsx'
 import { useTypingEngine } from './hooks/useTypingEngine.js'
+import { useTimer } from './hooks/useTimer.js'
+import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
 
 export const MODES = [
   { label: '15s', value: 15 },
@@ -18,28 +21,90 @@ const SCREENS = {
 }
 
 function App() {
-  const [screen, setScreen] = useState(SCREENS.SELECT)
-  const [mode, setMode]     = useState(60)
+  const [screen, setScreen]     = useState(SCREENS.SELECT)
+  const [mode, setMode]         = useState(60)
+  const [resultData, setResult] = useState(null)
+  const elapsedRef              = useRef(0)
+  const snapshotIntervalRef     = useRef(null)
+  const engineRef               = useRef(null)  // ← fix for stale closure
 
+  // Timer — fires when countdown hits zero
+  const handleTimerExpire = useCallback(() => {
+    clearInterval(snapshotIntervalRef.current)
+    const snapshots   = timerRef.current.getWpmSnapshots()
+    const finalWpm    = calcWPM(engineRef.current.correctChars, mode)
+    const finalAcc    = calcAccuracy(engineRef.current.correctChars, engineRef.current.totalTyped)
+    setResult({
+      wpm:      finalWpm,
+      accuracy: finalAcc,
+      errors:   engineRef.current.incorrectChars,
+      snapshots,
+      duration: mode,
+    })
+    setScreen(SCREENS.RESULT)
+  }, [mode])
+
+  const timerRef = useRef(null)
+  const timer    = useTimer(mode, handleTimerExpire)
+  timerRef.current = timer  // ← keep ref in sync
+
+  // First keypress starts the timer
   const handleFirstKeyPress = useCallback(() => {
-    // Will wire up to timer in Phase 3
+    elapsedRef.current = 0
+    timerRef.current.start()
+
+    snapshotIntervalRef.current = setInterval(() => {
+      elapsedRef.current += 5
+      if (engineRef.current) {
+        const wpm = calcWPM(engineRef.current.correctChars, elapsedRef.current)
+        timerRef.current.addWpmSnapshot(wpm)
+      }
+    }, 5000)
   }, [])
 
-  const {
-    words, charState, currentWord, currentChar,
-    hasStarted, isFinished, correctChars, totalTyped,
-    handleKeyPress, reset,
-  } = useTypingEngine(handleFirstKeyPress)
+  const engine = useTypingEngine(handleFirstKeyPress)
+  engineRef.current = engine  // ← keep ref in sync
 
-  const handleSelectMode  = useCallback((duration) => setMode(duration), [])
-  const handleStartTest   = useCallback(() => { reset(); setScreen(SCREENS.TEST) }, [reset])
-  const handleBackToMenu  = useCallback(() => { reset(); setScreen(SCREENS.SELECT) }, [reset])
+  // Live stats
+  const elapsed = mode - timer.timeLeft
+  const liveWpm = calcWPM(engine.correctChars, elapsed > 0 ? elapsed : 1)
+  const liveAcc = calcAccuracy(engine.correctChars, engine.totalTyped)
 
-  // ESC key to reset
+  const handleSelectMode = useCallback((duration) => {
+    setMode(duration)
+    timerRef.current.reset()
+  }, [])
+
+  const handleStartTest = useCallback(() => {
+    engineRef.current.reset()
+    timerRef.current.reset()
+    clearInterval(snapshotIntervalRef.current)
+    elapsedRef.current = 0
+    setScreen(SCREENS.TEST)
+  }, [])
+
+  const handleBackToMenu = useCallback(() => {
+    engineRef.current.reset()
+    timerRef.current.reset()
+    clearInterval(snapshotIntervalRef.current)
+    setResult(null)
+    setScreen(SCREENS.SELECT)
+  }, [])
+
   const handleKeyPressWrapped = useCallback((key) => {
-    if (key === 'Escape') { reset(); return }
-    handleKeyPress(key)
-  }, [handleKeyPress, reset])
+    if (key === 'Escape') {
+      engineRef.current.reset()
+      timerRef.current.reset()
+      clearInterval(snapshotIntervalRef.current)
+      elapsedRef.current = 0
+      return
+    }
+    engineRef.current.handleKeyPress(key)
+  }, [])
+
+  useEffect(() => {
+    return () => clearInterval(snapshotIntervalRef.current)
+  }, [])
 
   return (
     <div className="relative min-h-screen bg-bg-base bg-grid vignette">
@@ -47,6 +112,7 @@ function App() {
         <Header mode={mode} screen={screen} onBackToMenu={handleBackToMenu} />
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8">
+
           {screen === SCREENS.SELECT && (
             <ModeSelector
               modes={MODES}
@@ -58,12 +124,20 @@ function App() {
 
           {screen === SCREENS.TEST && (
             <div className="animate-fade-up w-full max-w-3xl">
+              <StatsBar
+                wpm={liveWpm}
+                accuracy={liveAcc}
+                errors={engine.incorrectChars}
+                timeLeft={timer.timeLeft}
+                isRunning={timer.isRunning}
+                duration={mode}
+              />
               <TypingArea
-                words={words}
-                charState={charState}
-                currentWord={currentWord}
-                currentChar={currentChar}
-                isFinished={isFinished}
+                words={engine.words}
+                charState={engine.charState}
+                currentWord={engine.currentWord}
+                currentChar={engine.currentChar}
+                isFinished={timer.timeLeft === 0}
                 onKeyPress={handleKeyPressWrapped}
               />
             </div>
@@ -76,6 +150,7 @@ function App() {
               </div>
             </div>
           )}
+
         </main>
 
         <footer className="text-center py-6 text-txt-untyped text-sm font-mono">
