@@ -3,8 +3,10 @@ import Header from './components/Header.jsx'
 import ModeSelector from './components/ModeSelector.jsx'
 import TypingArea from './components/TypingArea.jsx'
 import StatsBar from './components/StatsBar.jsx'
+import Results from './components/Results.jsx'
 import { useTypingEngine } from './hooks/useTypingEngine.js'
 import { useTimer } from './hooks/useTimer.js'
+import { usePersonalBest } from './hooks/usePersonalBest.js'
 import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
 
 export const MODES = [
@@ -26,33 +28,36 @@ function App() {
   const [resultData, setResult] = useState(null)
   const elapsedRef              = useRef(0)
   const snapshotIntervalRef     = useRef(null)
-  const engineRef               = useRef(null)  // ← fix for stale closure
+  const engineRef               = useRef(null)
+  const timerRef                = useRef(null)
 
-  // Timer — fires when countdown hits zero
+  const { getPB, checkAndSave } = usePersonalBest()
+
+  // Timer expire handler
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
-    const snapshots   = timerRef.current.getWpmSnapshots()
-    const finalWpm    = calcWPM(engineRef.current.correctChars, mode)
-    const finalAcc    = calcAccuracy(engineRef.current.correctChars, engineRef.current.totalTyped)
+    const snapshots  = timerRef.current.getWpmSnapshots()
+    const finalWpm   = calcWPM(engineRef.current.correctChars, mode)
+    const finalAcc   = calcAccuracy(engineRef.current.correctChars, engineRef.current.totalTyped)
+    const isNewPB    = checkAndSave(mode, finalWpm)
     setResult({
       wpm:      finalWpm,
       accuracy: finalAcc,
       errors:   engineRef.current.incorrectChars,
       snapshots,
       duration: mode,
+      isNewPB,
     })
     setScreen(SCREENS.RESULT)
-  }, [mode])
+  }, [mode, checkAndSave])
 
-  const timerRef = useRef(null)
-  const timer    = useTimer(mode, handleTimerExpire)
-  timerRef.current = timer  // ← keep ref in sync
+  const timer = useTimer(mode, handleTimerExpire)
+  timerRef.current = timer
 
   // First keypress starts the timer
   const handleFirstKeyPress = useCallback(() => {
     elapsedRef.current = 0
     timerRef.current.start()
-
     snapshotIntervalRef.current = setInterval(() => {
       elapsedRef.current += 5
       if (engineRef.current) {
@@ -63,7 +68,7 @@ function App() {
   }, [])
 
   const engine = useTypingEngine(handleFirstKeyPress)
-  engineRef.current = engine  // ← keep ref in sync
+  engineRef.current = engine
 
   // Live stats
   const elapsed = mode - timer.timeLeft
@@ -80,6 +85,15 @@ function App() {
     timerRef.current.reset()
     clearInterval(snapshotIntervalRef.current)
     elapsedRef.current = 0
+    setScreen(SCREENS.TEST)
+  }, [])
+
+  const handleRetry = useCallback(() => {
+    engineRef.current.reset()
+    timerRef.current.reset()
+    clearInterval(snapshotIntervalRef.current)
+    elapsedRef.current = 0
+    setResult(null)
     setScreen(SCREENS.TEST)
   }, [])
 
@@ -102,6 +116,28 @@ function App() {
     engineRef.current.handleKeyPress(key)
   }, [])
 
+  // Tab + Enter to retry from results screen
+  useEffect(() => {
+    if (screen !== SCREENS.RESULT) return
+    let tabPressed = false
+
+    const handleKey = (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        tabPressed = true
+        return
+      }
+      if (e.key === 'Enter' && tabPressed) {
+        handleRetry()
+      }
+      tabPressed = false
+    }
+
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [screen, handleRetry])
+
+  // Cleanup
   useEffect(() => {
     return () => clearInterval(snapshotIntervalRef.current)
   }, [])
@@ -143,12 +179,12 @@ function App() {
             </div>
           )}
 
-          {screen === SCREENS.RESULT && (
-            <div className="animate-fade-up w-full max-w-3xl">
-              <div className="text-txt-muted text-center typing-font text-lg">
-                Results — coming in Phase 4
-              </div>
-            </div>
+          {screen === SCREENS.RESULT && resultData && (
+            <Results
+              data={resultData}
+              onRetry={handleRetry}
+              onChangeMode={handleBackToMenu}
+            />
           )}
 
         </main>
