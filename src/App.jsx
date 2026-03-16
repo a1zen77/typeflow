@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react'
 import Header from './components/Header.jsx'
 import ModeSelector from './components/ModeSelector.jsx'
+import TypingArea from './components/TypingArea.jsx'
+import { useTypingEngine } from './hooks/useTypingEngine.js'
 
 export const MODES = [
   { label: '15s', value: 15 },
@@ -16,18 +18,28 @@ const SCREENS = {
 }
 
 function App() {
-  const [screen, setScreen]     = useState(SCREENS.SELECT)
-  const [mode, setMode]         = useState(60)
-  const [resultData, setResult] = useState(null)
+  const [screen, setScreen] = useState(SCREENS.SELECT)
+  const [mode, setMode]     = useState(60)
+
+  const handleFirstKeyPress = useCallback(() => {
+    // Will wire up to timer in Phase 3
+  }, [])
+
+  const {
+    words, charState, currentWord, currentChar,
+    hasStarted, isFinished, correctChars, totalTyped,
+    handleKeyPress, reset,
+  } = useTypingEngine(handleFirstKeyPress)
 
   const handleSelectMode  = useCallback((duration) => setMode(duration), [])
-  const handleStartTest   = useCallback(() => setScreen(SCREENS.TEST), [])
-  const handleTestComplete = useCallback((data) => {
-    setResult(data)
-    setScreen(SCREENS.RESULT)
-  }, [])
-  const handleRetry       = useCallback(() => { setResult(null); setScreen(SCREENS.TEST) }, [])
-  const handleBackToMenu  = useCallback(() => { setResult(null); setScreen(SCREENS.SELECT) }, [])
+  const handleStartTest   = useCallback(() => { reset(); setScreen(SCREENS.TEST) }, [reset])
+  const handleBackToMenu  = useCallback(() => { reset(); setScreen(SCREENS.SELECT) }, [reset])
+
+  // ESC key to reset
+  const handleKeyPressWrapped = useCallback((key) => {
+    if (key === 'Escape') { reset(); return }
+    handleKeyPress(key)
+  }, [handleKeyPress, reset])
 
   return (
     <div className="relative min-h-screen bg-bg-base bg-grid vignette">
@@ -43,13 +55,20 @@ function App() {
               onStart={handleStartTest}
             />
           )}
+
           {screen === SCREENS.TEST && (
             <div className="animate-fade-up w-full max-w-3xl">
-              <div className="text-txt-muted text-center typing-font text-lg">
-                Typing test — coming in Phase 2
-              </div>
+              <TypingArea
+                words={words}
+                charState={charState}
+                currentWord={currentWord}
+                currentChar={currentChar}
+                isFinished={isFinished}
+                onKeyPress={handleKeyPressWrapped}
+              />
             </div>
           )}
+
           {screen === SCREENS.RESULT && (
             <div className="animate-fade-up w-full max-w-3xl">
               <div className="text-txt-muted text-center typing-font text-lg">
