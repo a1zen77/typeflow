@@ -1,15 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getPersonalBest } from '../utils/storage.js'
 
-function ModeSelector({ modes, selected, onSelect, onStart }) {
+function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsChange }) {
 
-  // Start test immediately if user just starts typing
   useEffect(() => {
     const handleKey = (e) => {
       const isLetter = e.key.length === 1 && e.key.match(/[a-z]/i)
-      if (isLetter && !e.ctrlKey && !e.metaKey) {
-        onStart()
-      }
+      if (isLetter && !e.ctrlKey && !e.metaKey) onStart()
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -28,12 +25,25 @@ function ModeSelector({ modes, selected, onSelect, onStart }) {
         </p>
       </div>
 
-      {/* Mode buttons */}
+      {/* Mode options row — punctuation + numbers toggles */}
+      <div className="flex items-center gap-3">
+        <Toggle
+          label="punctuation"
+          active={options.punctuation}
+          onClick={() => onOptionsChange({ ...options, punctuation: !options.punctuation })}
+        />
+        <Toggle
+          label="numbers"
+          active={options.numbers}
+          onClick={() => onOptionsChange({ ...options, numbers: !options.numbers })}
+        />
+      </div>
+
+      {/* Duration buttons */}
       <div className="flex gap-3 flex-wrap justify-center">
         {modes.map(m => {
           const pb       = getPersonalBest(m.value)
           const isActive = selected === m.value
-
           return (
             <button
               key={m.value}
@@ -48,28 +58,18 @@ function ModeSelector({ modes, selected, onSelect, onStart }) {
               `}
               aria-pressed={isActive}
             >
-              {/* Active indicator dot */}
               {isActive && (
                 <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand animate-pulse-soft" />
               )}
-
               <span className="text-xl font-medium">{m.label}</span>
-
-              {/* Personal best */}
               <div className="flex flex-col items-center gap-0.5">
                 {pb !== null ? (
                   <>
-                    <span className={`text-xs font-mono ${isActive ? 'text-brand/60' : 'text-txt-untyped'}`}>
-                      best
-                    </span>
-                    <span className={`text-sm font-mono font-medium ${isActive ? 'text-brand/80' : 'text-txt-muted'}`}>
-                      {pb} wpm
-                    </span>
+                    <span className={`text-xs font-mono ${isActive ? 'text-brand/60' : 'text-txt-untyped'}`}>best</span>
+                    <span className={`text-sm font-mono font-medium ${isActive ? 'text-brand/80' : 'text-txt-muted'}`}>{pb} wpm</span>
                   </>
                 ) : (
-                  <span className="text-xs font-mono text-txt-untyped">
-                    no record
-                  </span>
+                  <span className="text-xs font-mono text-txt-untyped">no record</span>
                 )}
               </div>
             </button>
@@ -88,9 +88,7 @@ function ModeSelector({ modes, selected, onSelect, onStart }) {
         "
       >
         start test
-        <span className="text-white/60 font-mono text-sm group-hover:text-white/90 transition-colors">
-          →
-        </span>
+        <span className="text-white/60 font-mono text-sm group-hover:text-white/90 transition-colors">→</span>
       </button>
 
       {/* Keyboard hints */}
@@ -109,14 +107,32 @@ function ModeSelector({ modes, selected, onSelect, onStart }) {
   )
 }
 
+function Toggle({ label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        flex items-center gap-2 px-4 py-2 rounded-lg border font-mono text-sm
+        transition-all duration-200
+        ${active
+          ? 'bg-brand/10 border-brand/40 text-brand'
+          : 'bg-bg-surface border-white/8 text-txt-muted hover:border-white/15 hover:text-txt-base'
+        }
+      `}
+      aria-pressed={active}
+    >
+      <span className={`w-1.5 h-1.5 rounded-full transition-colors duration-200 ${active ? 'bg-brand' : 'bg-txt-untyped'}`} />
+      {label}
+    </button>
+  )
+}
+
 function KbdHint({ keys, label }) {
   return (
     <span className="flex items-center gap-1">
       {keys.map((k, i) => (
         <span key={k} className="flex items-center gap-1">
-          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/20 text-txt-sub text-[10px] font-mono">
-            {k}
-          </kbd>
+          <kbd className="px-1.5 py-0.5 rounded bg-bg-card border border-white/20 text-txt-sub text-[10px] font-mono">{k}</kbd>
           {i < keys.length - 1 && <span className="text-txt-muted/60">+</span>}
         </span>
       ))}

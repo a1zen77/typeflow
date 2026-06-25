@@ -23,17 +23,17 @@ const SCREENS = {
 }
 
 function App() {
-  const [screen, setScreen]     = useState(SCREENS.SELECT)
-  const [mode, setMode]         = useState(60)
-  const [resultData, setResult] = useState(null)
-  const elapsedRef              = useRef(0)
-  const snapshotIntervalRef     = useRef(null)
-  const engineRef               = useRef(null)
-  const timerRef                = useRef(null)
+  const [screen, setScreen]         = useState(SCREENS.SELECT)
+  const [mode, setMode]             = useState(60)
+  const [resultData, setResult]     = useState(null)
+  const [testOptions, setTestOptions] = useState({ punctuation: false, numbers: false }) // ← moved inside App
+  const elapsedRef                  = useRef(0)
+  const snapshotIntervalRef         = useRef(null)
+  const engineRef                   = useRef(null)
+  const timerRef                    = useRef(null)
 
   const { getPB, checkAndSave } = usePersonalBest()
 
-  // Timer expire handler
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
     const snapshots  = timerRef.current.getWpmSnapshots()
@@ -54,7 +54,6 @@ function App() {
   const timer = useTimer(mode, handleTimerExpire)
   timerRef.current = timer
 
-  // First keypress starts the timer
   const handleFirstKeyPress = useCallback(() => {
     elapsedRef.current = 0
     timerRef.current.start()
@@ -67,10 +66,9 @@ function App() {
     }, 5000)
   }, [])
 
-  const engine = useTypingEngine(handleFirstKeyPress)
+  const engine = useTypingEngine(handleFirstKeyPress, testOptions) // ← pass testOptions
   engineRef.current = engine
 
-  // Live stats
   const elapsed = mode - timer.timeLeft
   const liveWpm = calcWPM(engine.correctChars, elapsed > 0 ? elapsed : 1)
   const liveAcc = calcAccuracy(engine.correctChars, engine.totalTyped)
@@ -116,7 +114,6 @@ function App() {
     engineRef.current.handleKeyPress(key)
   }, [])
 
-  // Tab + Enter to retry from results screen
   useEffect(() => {
     if (screen !== SCREENS.RESULT) return
     let tabPressed = false
@@ -141,7 +138,6 @@ function App() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [screen, handleRetry, handleBackToMenu])
 
-  // Cleanup
   useEffect(() => {
     return () => clearInterval(snapshotIntervalRef.current)
   }, [])
@@ -155,11 +151,13 @@ function App() {
 
           {screen === SCREENS.SELECT && (
             <ModeSelector
-              key={screen} 
+              key={screen}
               modes={MODES}
               selected={mode}
               onSelect={handleSelectMode}
               onStart={handleStartTest}
+              options={testOptions}
+              onOptionsChange={setTestOptions}
             />
           )}
 
