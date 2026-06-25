@@ -45,3 +45,20 @@ const WORDS = [
 ];
 
 export default WORDS;
+
+export const CONTRACTIONS = [
+  "don't", "can't", "won't", "it's", "I'm", "you're", "they're",
+  "we're", "he's", "she's", "isn't", "aren't", "wasn't", "weren't",
+  "haven't", "hasn't", "hadn't", "doesn't", "didn't", "couldn't",
+  "wouldn't", "shouldn't", "that's", "there's", "here's", "what's",
+  "who's", "I've", "you've", "we've", "they've", "I'll", "you'll",
+  "he'll", "she'll", "we'll", "they'll", "I'd", "you'd", "he'd",
+  "she'd", "we'd", "they'd", "let's", "that'll", "it'll"
+]
+
+export const NUMBERS = [
+  "1", "2", "3", "4", "5", "6", "7", "8", "9",
+  "10", "12", "15", "20", "24", "25", "30", "42", "50",
+  "64", "75", "80", "99", "100", "128", "200", "256", "365",
+  "500", "512", "1000", "2024"
+]
