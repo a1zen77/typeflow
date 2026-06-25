@@ -3,9 +3,9 @@ import { generateWords, buildCharState } from '../utils/wordGen.js'
 
 const WORD_COUNT = 80
 
-export function useTypingEngine(onFirstKeyPress, options = {}) {
+export function useTypingEngine(onFirstKeyPress, options = {}, fixedWords = null) {
   const getInitialState = () => {
-    const w = generateWords(WORD_COUNT, options)
+    const w = fixedWords ?? generateWords(WORD_COUNT, options)
     return { words: w, charState: buildCharState(w) }
   }
 
@@ -18,8 +18,22 @@ export function useTypingEngine(onFirstKeyPress, options = {}) {
   const [incorrectChars, setIncorrectChars] = useState(0)
   const [totalTyped,     setTotalTyped]     = useState(0)
 
+  // When fixedWords changes (new quote fetched), reset with new words
+  useEffect(() => {
+    if (fixedWords) {
+      setWordState({ words: fixedWords, charState: buildCharState(fixedWords) })
+      setCurrentWord(0)
+      setCurrentChar(0)
+      setHasStarted(false)
+      setIsFinished(false)
+      setCorrectChars(0)
+      setIncorrectChars(0)
+      setTotalTyped(0)
+    }
+  }, [fixedWords])
+
   const reset = useCallback(() => {
-    const w = generateWords(WORD_COUNT, options)
+    const w = fixedWords ?? generateWords(WORD_COUNT, options)
     setWordState({ words: w, charState: buildCharState(w) })
     setCurrentWord(0)
     setCurrentChar(0)
@@ -28,7 +42,7 @@ export function useTypingEngine(onFirstKeyPress, options = {}) {
     setCorrectChars(0)
     setIncorrectChars(0)
     setTotalTyped(0)
-  }, [options])
+  }, [fixedWords, options])
 
   const handleKeyPress = useCallback((key) => {
     if (isFinished) return
@@ -55,6 +69,7 @@ export function useTypingEngine(onFirstKeyPress, options = {}) {
     if (key === ' ') {
       if (currentWord >= words.length - 1) {
         setIsFinished(true)
+        if (onFirstKeyPress) {}  // test ends on last space
         return
       }
       setCurrentWord(w => w + 1)
