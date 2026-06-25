@@ -6,12 +6,14 @@ function Results({ data, onRetry, onChangeMode }) {
 
   const prevPB = isNewPB ? wpm : getPersonalBest(duration)
 
-  const durationLabel = {
-    15:  '15 seconds',
-    30:  '30 seconds',
-    60:  '1 minute',
-    120: '2 minutes',
-  }[duration] ?? `${duration}s`
+  const durationLabel = data.quoteMode
+  ? null
+  : {
+      15:  '15 seconds',
+      30:  '30 seconds',
+      60:  '1 minute',
+      120: '2 minutes',
+    }[duration] ?? `${duration}s`
 
   return (
     <div className="animate-fade-up w-full max-w-2xl mx-auto flex flex-col gap-8">
@@ -34,9 +36,14 @@ function Results({ data, onRetry, onChangeMode }) {
           </span>
           <span className="text-txt-muted font-mono text-2xl">wpm</span>
         </div>
-        <p className="text-txt-muted font-mono text-sm">{durationLabel} test</p>
-
-        {/* Previous PB comparison */}
+        {durationLabel && (
+          <p className="text-txt-muted font-mono text-sm">{durationLabel} test</p>
+        )}
+        {data.quoteMode && data.author && (
+          <p className="text-txt-muted font-mono text-sm">
+            quote by <span className="text-txt-base">{data.author}</span>
+          </p>
+        )}
         {prevPB !== null && !isNewPB && (
           <p className="text-txt-untyped font-mono text-xs mt-1">
             best: {prevPB} wpm

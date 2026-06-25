@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { generateWords, buildCharState } from '../utils/wordGen.js'
 
 const WORD_COUNT = 80
