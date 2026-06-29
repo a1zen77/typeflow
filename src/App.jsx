@@ -9,18 +9,6 @@ import { useTimer } from './hooks/useTimer.js'
 import { usePersonalBest } from './hooks/usePersonalBest.js'
 import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
 
-import { supabase } from './lib/supabase.js'
-
-// Temporary connection test — remove after verifying
-supabase
-  .from('scores')
-  .select('*')
-  .limit(1)
-  .then(({ data, error }) => {
-    if (error) console.error('Supabase connection failed:', error.message)
-    else console.log('Supabase connected successfully', data)
-  })
-
 export const MODES = [
   { label: '15s', value: 15 },
   { label: '30s', value: 30 },
