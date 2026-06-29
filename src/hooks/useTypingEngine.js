@@ -1,11 +1,11 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import { generateWords, buildCharState } from '../utils/wordGen.js'
 
 const WORD_COUNT = 80
 
-export function useTypingEngine(onFirstKeyPress, options = {}, fixedWords = null) {
+export function useTypingEngine(onFirstKeyPress, options = {}) {
   const getInitialState = () => {
-    const w = fixedWords ?? generateWords(WORD_COUNT, options)
+    const w = generateWords(WORD_COUNT, options)
     return { words: w, charState: buildCharState(w) }
   }
 
@@ -18,32 +18,8 @@ export function useTypingEngine(onFirstKeyPress, options = {}, fixedWords = null
   const [incorrectChars, setIncorrectChars] = useState(0)
   const [totalTyped,     setTotalTyped]     = useState(0)
 
-  // Use a ref to track the previous quote string so we only
-  // reset when the actual quote content changes, not on every render
-  const prevQuoteRef = useRef(null)
-
-  useEffect(() => {
-    if (!fixedWords) return
-
-    const quoteString = fixedWords.join(' ')
-
-    // Only reset if the quote has actually changed
-    if (quoteString === prevQuoteRef.current) return
-    prevQuoteRef.current = quoteString
-
-    setWordState({ words: fixedWords, charState: buildCharState(fixedWords) })
-    setCurrentWord(0)
-    setCurrentChar(0)
-    setHasStarted(false)
-    setIsFinished(false)
-    setCorrectChars(0)
-    setIncorrectChars(0)
-    setTotalTyped(0)
-  }, [fixedWords])
-
   const reset = useCallback(() => {
-    const w = fixedWords ?? generateWords(WORD_COUNT, options)
-    prevQuoteRef.current = fixedWords ? fixedWords.join(' ') : null
+    const w = generateWords(WORD_COUNT, options)
     setWordState({ words: w, charState: buildCharState(w) })
     setCurrentWord(0)
     setCurrentChar(0)
@@ -52,7 +28,7 @@ export function useTypingEngine(onFirstKeyPress, options = {}, fixedWords = null
     setCorrectChars(0)
     setIncorrectChars(0)
     setTotalTyped(0)
-  }, [fixedWords, options])
+  }, [options])
 
   const handleKeyPress = useCallback((key) => {
     if (isFinished) return

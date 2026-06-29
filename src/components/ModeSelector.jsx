@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { getPersonalBest } from '../utils/storage.js'
 
-function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsChange, testMode, onTestModeChange }) {
+function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsChange }) {
 
   useEffect(() => {
     const handleKey = (e) => {
@@ -12,10 +12,8 @@ function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsCh
     return () => window.removeEventListener('keydown', handleKey)
   }, [onStart])
 
-  const isQuoteMode = testMode === 'quote'
-
   return (
-    <div className="animate-fade-up flex flex-col items-center gap-8 w-full max-w-xl">
+    <div className="animate-fade-up flex flex-col items-center gap-10 w-full max-w-xl">
 
       {/* Hero */}
       <div className="text-center space-y-3">
@@ -23,88 +21,61 @@ function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsCh
           test your speed.
         </h1>
         <p className="text-txt-muted text-base font-mono">
-          choose a mode and start typing
+          choose a duration and start typing
         </p>
       </div>
 
-      {/* Test type — words vs quote */}
-      <div className="flex items-center gap-2 bg-bg-surface border border-white/8 rounded-xl p-1">
-        <TypeTab
-          label="words"
-          active={testMode === 'words'}
-          onClick={() => onTestModeChange('words')}
+      {/* Toggles */}
+      <div className="flex items-center gap-3">
+        <Toggle
+          label="punctuation"
+          active={options.punctuation}
+          onClick={() => onOptionsChange({ ...options, punctuation: !options.punctuation })}
         />
-        <TypeTab
-          label="quote"
-          active={testMode === 'quote'}
-          onClick={() => onTestModeChange('quote')}
+        <Toggle
+          label="numbers"
+          active={options.numbers}
+          onClick={() => onOptionsChange({ ...options, numbers: !options.numbers })}
         />
       </div>
 
-      {/* Toggles — only show in words mode */}
-      {!isQuoteMode && (
-        <div className="flex items-center gap-3">
-          <Toggle
-            label="punctuation"
-            active={options.punctuation}
-            onClick={() => onOptionsChange({ ...options, punctuation: !options.punctuation })}
-          />
-          <Toggle
-            label="numbers"
-            active={options.numbers}
-            onClick={() => onOptionsChange({ ...options, numbers: !options.numbers })}
-          />
-        </div>
-      )}
-
-      {/* Duration buttons — only show in words mode */}
-      {!isQuoteMode && (
-        <div className="flex gap-3 flex-wrap justify-center">
-          {modes.map(m => {
-            const pb       = getPersonalBest(m.value)
-            const isActive = selected === m.value
-            return (
-              <button
-                key={m.value}
-                onClick={() => onSelect(m.value)}
-                className={`
-                  relative flex flex-col items-center gap-2 px-7 py-4 rounded-xl
-                  border font-mono transition-all duration-200 min-w-[88px]
-                  ${isActive
-                    ? 'bg-brand/10 border-brand/50 text-brand shadow-[0_0_20px_rgba(124,106,247,0.15)]'
-                    : 'bg-bg-surface border-white/8 text-txt-muted hover:bg-bg-card hover:border-white/15 hover:text-txt-base'
-                  }
-                `}
-                aria-pressed={isActive}
-              >
-                {isActive && (
-                  <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand animate-pulse-soft" />
+      {/* Duration buttons */}
+      <div className="flex gap-3 flex-wrap justify-center">
+        {modes.map(m => {
+          const pb       = getPersonalBest(m.value)
+          const isActive = selected === m.value
+          return (
+            <button
+              key={m.value}
+              onClick={() => onSelect(m.value)}
+              className={`
+                relative flex flex-col items-center gap-2 px-7 py-4 rounded-xl
+                border font-mono transition-all duration-200 min-w-[88px]
+                ${isActive
+                  ? 'bg-brand/10 border-brand/50 text-brand shadow-[0_0_20px_rgba(124,106,247,0.15)]'
+                  : 'bg-bg-surface border-white/8 text-txt-muted hover:bg-bg-card hover:border-white/15 hover:text-txt-base'
+                }
+              `}
+              aria-pressed={isActive}
+            >
+              {isActive && (
+                <span className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-brand animate-pulse-soft" />
+              )}
+              <span className="text-xl font-medium">{m.label}</span>
+              <div className="flex flex-col items-center gap-0.5">
+                {pb !== null ? (
+                  <>
+                    <span className={`text-xs font-mono ${isActive ? 'text-brand/60' : 'text-txt-untyped'}`}>best</span>
+                    <span className={`text-sm font-mono font-medium ${isActive ? 'text-brand/80' : 'text-txt-muted'}`}>{pb} wpm</span>
+                  </>
+                ) : (
+                  <span className="text-xs font-mono text-txt-untyped">no record</span>
                 )}
-                <span className="text-xl font-medium">{m.label}</span>
-                <div className="flex flex-col items-center gap-0.5">
-                  {pb !== null ? (
-                    <>
-                      <span className={`text-xs font-mono ${isActive ? 'text-brand/60' : 'text-txt-untyped'}`}>best</span>
-                      <span className={`text-sm font-mono font-medium ${isActive ? 'text-brand/80' : 'text-txt-muted'}`}>{pb} wpm</span>
-                    </>
-                  ) : (
-                    <span className="text-xs font-mono text-txt-untyped">no record</span>
-                  )}
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      )}
-
-      {/* Quote mode description */}
-      {isQuoteMode && (
-        <div className="text-center space-y-2 py-2">
-          <p className="text-txt-sub font-mono text-sm">
-            type a random quote — no timer, finish to see your results
-          </p>
-        </div>
-      )}
+              </div>
+            </button>
+          )
+        })}
+      </div>
 
       {/* Start button */}
       <button
@@ -133,23 +104,6 @@ function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsCh
       </div>
 
     </div>
-  )
-}
-
-function TypeTab({ label, active, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`
-        px-5 py-2 rounded-lg font-mono text-sm transition-all duration-200
-        ${active
-          ? 'bg-brand/15 text-brand'
-          : 'text-txt-muted hover:text-txt-base'
-        }
-      `}
-    >
-      {label}
-    </button>
   )
 }
 
