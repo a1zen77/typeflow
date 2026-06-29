@@ -1,6 +1,6 @@
 import { MODES } from '../App.jsx'
 
-function Header({ mode, screen, onBackToMenu }) {
+function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSignOut }) {
   const modeLabel = MODES.find(m => m.value === mode)?.label ?? `${mode}s`
 
   return (
@@ -29,7 +29,7 @@ function Header({ mode, screen, onBackToMenu }) {
       )}
 
       {/* Right side */}
-      <nav className="flex items-center gap-1">
+      <nav className="flex items-center gap-2">
         {screen === 'test' && (
           <button
             onClick={onBackToMenu}
@@ -39,8 +39,31 @@ function Header({ mode, screen, onBackToMenu }) {
             esc
           </button>
         )}
+
+        {/* Auth section */}
+        {user ? (
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:block text-txt-sub font-mono text-sm">
+              {profile?.username ?? user.email}
+            </span>
+            <button
+              onClick={onSignOut}
+              className="px-3 py-1.5 rounded-lg text-txt-muted text-xs font-mono border border-white/8 hover:text-txt-base hover:border-white/15 transition-all duration-150"
+            >
+              sign out
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={onSignInClick}
+            className="px-4 py-1.5 rounded-lg text-txt-base text-sm font-mono border border-white/10 hover:bg-bg-card hover:border-white/20 transition-all duration-150"
+          >
+            sign in
+          </button>
+        )}
+
         <a
-          href="https://github.com/a1zen77/typeflow"
+          href="https://github.com/YOUR_USERNAME/typeflow"
           target="_blank"
           rel="noopener noreferrer"
           className="px-3 py-1.5 rounded-lg text-txt-muted text-sm font-mono hover:text-txt-base hover:bg-bg-hover transition-all duration-150"

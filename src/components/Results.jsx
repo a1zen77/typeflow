@@ -1,19 +1,20 @@
 import WpmChart from './WpmChart.jsx'
+import SaveScorePrompt from './SaveScorePrompt.jsx'
 import { getPersonalBest } from '../utils/storage.js'
+import { useState } from 'react'
 
-function Results({ data, onRetry, onChangeMode }) {
+function Results({ data, onRetry, onChangeMode, user, onSignInClick }) {
   const { wpm, accuracy, errors, snapshots, duration, isNewPB } = data
+  const [showSavePrompt, setShowSavePrompt] = useState(!user)
 
   const prevPB = isNewPB ? wpm : getPersonalBest(duration)
 
-  const durationLabel = data.quoteMode
-  ? null
-  : {
-      15:  '15 seconds',
-      30:  '30 seconds',
-      60:  '1 minute',
-      120: '2 minutes',
-    }[duration] ?? `${duration}s`
+  const durationLabel = {
+    15:  '15 seconds',
+    30:  '30 seconds',
+    60:  '1 minute',
+    120: '2 minutes',
+  }[duration] ?? `${duration}s`
 
   return (
     <div className="animate-fade-up w-full max-w-2xl mx-auto flex flex-col gap-8">
@@ -36,14 +37,7 @@ function Results({ data, onRetry, onChangeMode }) {
           </span>
           <span className="text-txt-muted font-mono text-2xl">wpm</span>
         </div>
-        {durationLabel && (
-          <p className="text-txt-muted font-mono text-sm">{durationLabel} test</p>
-        )}
-        {data.quoteMode && data.author && (
-          <p className="text-txt-muted font-mono text-sm">
-            quote by <span className="text-txt-base">{data.author}</span>
-          </p>
-        )}
+        <p className="text-txt-muted font-mono text-sm">{durationLabel} test</p>
         {prevPB !== null && !isNewPB && (
           <p className="text-txt-untyped font-mono text-xs mt-1">
             best: {prevPB} wpm
@@ -57,17 +51,8 @@ function Results({ data, onRetry, onChangeMode }) {
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-3">
         <StatCard label="wpm"      value={wpm} />
-        <StatCard
-          label="accuracy"
-          value={`${accuracy}%`}
-          highlight={accuracy >= 95}
-          warn={accuracy < 80}
-        />
-        <StatCard
-          label="errors"
-          value={errors}
-          warn={errors > 10}
-        />
+        <StatCard label="accuracy" value={`${accuracy}%`} highlight={accuracy >= 95} warn={accuracy < 80} />
+        <StatCard label="errors"   value={errors} warn={errors > 10} />
       </div>
 
       {/* WPM chart */}
@@ -78,7 +63,16 @@ function Results({ data, onRetry, onChangeMode }) {
         <WpmChart snapshots={snapshots} />
       </div>
 
-      {/* Actions */}
+      {/* Save score prompt — only for non logged in users */}
+      {!user && showSavePrompt && (
+        <SaveScorePrompt
+          wpm={wpm}
+          onSignInClick={onSignInClick}
+          onSkip={() => setShowSavePrompt(false)}
+        />
+      )}
+
+      {/* Action buttons */}
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={onRetry}
@@ -92,7 +86,6 @@ function Results({ data, onRetry, onChangeMode }) {
           try again
           <span className="font-mono text-white/60">↺</span>
         </button>
-
         <button
           onClick={onChangeMode}
           className="

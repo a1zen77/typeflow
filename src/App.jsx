@@ -4,9 +4,11 @@ import ModeSelector from './components/ModeSelector.jsx'
 import TypingArea from './components/TypingArea.jsx'
 import StatsBar from './components/StatsBar.jsx'
 import Results from './components/Results.jsx'
+import AuthModal from './components/AuthModal.jsx'
 import { useTypingEngine } from './hooks/useTypingEngine.js'
 import { useTimer } from './hooks/useTimer.js'
 import { usePersonalBest } from './hooks/usePersonalBest.js'
+import { useAuth } from './hooks/useAuth.js'
 import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
 
 export const MODES = [
@@ -27,13 +29,15 @@ function App() {
   const [mode, setMode]               = useState(60)
   const [resultData, setResult]       = useState(null)
   const [testOptions, setTestOptions] = useState({ punctuation: false, numbers: false })
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   const elapsedRef          = useRef(0)
   const snapshotIntervalRef = useRef(null)
   const engineRef           = useRef(null)
   const timerRef            = useRef(null)
 
-  const { checkAndSave } = usePersonalBest()
+  const { checkAndSave }                    = usePersonalBest()
+  const { user, profile, signUp, signIn, signOut } = useAuth()
 
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
@@ -135,7 +139,16 @@ function App() {
   return (
     <div className="relative min-h-screen bg-bg-base bg-grid vignette">
       <div className="relative z-10 flex flex-col min-h-screen">
-        <Header mode={mode} screen={screen} onBackToMenu={handleBackToMenu} />
+
+        <Header
+          mode={mode}
+          screen={screen}
+          onBackToMenu={handleBackToMenu}
+          user={user}
+          profile={profile}
+          onSignInClick={() => setShowAuthModal(true)}
+          onSignOut={signOut}
+        />
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12">
 
@@ -177,6 +190,8 @@ function App() {
               data={resultData}
               onRetry={handleRetry}
               onChangeMode={handleBackToMenu}
+              user={user}
+              onSignInClick={() => setShowAuthModal(true)}
             />
           )}
 
@@ -186,6 +201,16 @@ function App() {
           typeflow &mdash; built with react + vite
         </footer>
       </div>
+
+      {/* Auth modal */}
+      {showAuthModal && (
+        <AuthModal
+          onSignUp={signUp}
+          onSignIn={signIn}
+          onClose={() => setShowAuthModal(false)}
+        />
+      )}
+
     </div>
   )
 }
