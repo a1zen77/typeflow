@@ -1,9 +1,9 @@
+import { useState } from 'react'
 import WpmChart from './WpmChart.jsx'
 import SaveScorePrompt from './SaveScorePrompt.jsx'
 import { getPersonalBest } from '../utils/storage.js'
-import { useState } from 'react'
 
-function Results({ data, onRetry, onChangeMode, user, onSignInClick }) {
+function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore, isSaving, isSaved }) {
   const { wpm, accuracy, errors, snapshots, duration, isNewPB } = data
   const [showSavePrompt, setShowSavePrompt] = useState(!user)
 
@@ -63,7 +63,39 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick }) {
         <WpmChart snapshots={snapshots} />
       </div>
 
-      {/* Save score prompt — only for non logged in users */}
+      {/* Save to leaderboard — logged in users */}
+      {user && !isSaved && (
+        <div className="w-full bg-bg-surface border border-white/8 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-center sm:text-left">
+            <p className="text-txt-base font-sans font-medium text-sm">
+              save to leaderboard
+            </p>
+            <p className="text-txt-muted font-mono text-xs mt-0.5">
+              submit <span className="text-brand">{wpm} wpm</span> to the global leaderboard
+            </p>
+          </div>
+          <button
+            onClick={onSaveScore}
+            disabled={isSaving}
+            className="
+              px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-white font-mono text-sm
+              transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+            "
+          >
+            {isSaving ? 'saving...' : 'save score'}
+          </button>
+        </div>
+      )}
+
+      {/* Score saved confirmation */}
+      {user && isSaved && (
+        <div className="w-full bg-accent-correct/8 border border-accent-correct/20 rounded-2xl p-4 flex items-center justify-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-correct" />
+          <span className="text-accent-correct font-mono text-sm">score saved to leaderboard</span>
+        </div>
+      )}
+
+      {/* Save prompt — logged out users */}
       {!user && showSavePrompt && (
         <SaveScorePrompt
           wpm={wpm}

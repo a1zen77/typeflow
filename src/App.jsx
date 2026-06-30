@@ -5,10 +5,12 @@ import TypingArea from './components/TypingArea.jsx'
 import StatsBar from './components/StatsBar.jsx'
 import Results from './components/Results.jsx'
 import AuthModal from './components/AuthModal.jsx'
+import Leaderboard from './pages/Leaderboard.jsx'
 import { useTypingEngine } from './hooks/useTypingEngine.js'
 import { useTimer } from './hooks/useTimer.js'
 import { usePersonalBest } from './hooks/usePersonalBest.js'
 import { useAuth } from './hooks/useAuth.js'
+import { useScores } from './hooks/useScores.js'
 import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
 
 export const MODES = [
@@ -19,25 +21,29 @@ export const MODES = [
 ]
 
 const SCREENS = {
-  SELECT: 'select',
-  TEST:   'test',
-  RESULT: 'result',
+  SELECT:      'select',
+  TEST:        'test',
+  RESULT:      'result',
+  LEADERBOARD: 'leaderboard',
 }
 
 function App() {
-  const [screen, setScreen]           = useState(SCREENS.SELECT)
-  const [mode, setMode]               = useState(60)
-  const [resultData, setResult]       = useState(null)
-  const [testOptions, setTestOptions] = useState({ punctuation: false, numbers: false })
+  const [screen, setScreen]               = useState(SCREENS.SELECT)
+  const [mode, setMode]                   = useState(60)
+  const [resultData, setResult]           = useState(null)
+  const [testOptions, setTestOptions]     = useState({ punctuation: false, numbers: false })
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [isSaving, setIsSaving]           = useState(false)
+  const [isSaved, setIsSaved]             = useState(false)
 
   const elapsedRef          = useRef(0)
   const snapshotIntervalRef = useRef(null)
   const engineRef           = useRef(null)
   const timerRef            = useRef(null)
 
-  const { checkAndSave }                    = usePersonalBest()
+  const { checkAndSave }                         = usePersonalBest()
   const { user, profile, signUp, signIn, signOut } = useAuth()
+  const { saveScore }                            = useScores()
 
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
@@ -45,6 +51,7 @@ function App() {
     const finalWpm  = calcWPM(engineRef.current.correctChars, mode)
     const finalAcc  = calcAccuracy(engineRef.current.correctChars, engineRef.current.totalTyped)
     const isNewPB   = checkAndSave(mode, finalWpm)
+    setIsSaved(false)
     setResult({
       wpm:      finalWpm,
       accuracy: finalAcc,
@@ -97,6 +104,7 @@ function App() {
     clearInterval(snapshotIntervalRef.current)
     elapsedRef.current = 0
     setResult(null)
+    setIsSaved(false)
     setScreen(SCREENS.TEST)
   }, [])
 
@@ -105,6 +113,7 @@ function App() {
     timerRef.current.reset()
     clearInterval(snapshotIntervalRef.current)
     setResult(null)
+    setIsSaved(false)
     setScreen(SCREENS.SELECT)
   }, [])
 
@@ -118,6 +127,27 @@ function App() {
     }
     engineRef.current.handleKeyPress(key)
   }, [])
+
+  // Save score to Supabase
+  const handleSaveScore = useCallback(async () => {
+    if (!user || !resultData || isSaved) return
+    setIsSaving(true)
+    await saveScore(user.id, {
+      wpm:      resultData.wpm,
+      accuracy: resultData.accuracy,
+      errors:   resultData.errors,
+      duration: resultData.duration,
+    })
+    setIsSaving(false)
+    setIsSaved(true)
+  }, [user, resultData, isSaved, saveScore])
+
+  // Auto-save score when user is logged in and test ends
+  useEffect(() => {
+    if (user && resultData && screen === SCREENS.RESULT && !isSaved) {
+      handleSaveScore()
+    }
+  }, [screen, resultData, user])
 
   useEffect(() => {
     if (screen !== SCREENS.RESULT) return
@@ -148,6 +178,7 @@ function App() {
           profile={profile}
           onSignInClick={() => setShowAuthModal(true)}
           onSignOut={signOut}
+          onLeaderboardClick={() => setScreen(SCREENS.LEADERBOARD)}
         />
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12">
@@ -192,6 +223,17 @@ function App() {
               onChangeMode={handleBackToMenu}
               user={user}
               onSignInClick={() => setShowAuthModal(true)}
+              onSaveScore={handleSaveScore}
+              isSaving={isSaving}
+              isSaved={isSaved}
+            />
+          )}
+
+          {screen === SCREENS.LEADERBOARD && (
+            <Leaderboard
+              user={user}
+              profile={profile}
+              onBack={handleBackToMenu}
             />
           )}
 
@@ -202,7 +244,6 @@ function App() {
         </footer>
       </div>
 
-      {/* Auth modal */}
       {showAuthModal && (
         <AuthModal
           onSignUp={signUp}

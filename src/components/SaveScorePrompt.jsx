@@ -1,4 +1,13 @@
-function SaveScorePrompt({ wpm, onSignInClick, onSkip }) {
+function SaveScorePrompt({ wpm, onSignInClick, onSkip, onSave, isSaving, isSaved }) {
+  if (isSaved) {
+    return (
+      <div className="w-full bg-accent-correct/8 border border-accent-correct/20 rounded-2xl p-4 flex items-center justify-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-accent-correct" />
+        <span className="text-accent-correct font-mono text-sm">score saved to leaderboard</span>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full bg-bg-surface border border-white/8 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="text-center sm:text-left">
