@@ -1,6 +1,6 @@
 import { MODES } from '../App.jsx'
 
-function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSignOut }) {
+function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSignOut, onLeaderboardClick }) {
   const modeLabel = MODES.find(m => m.value === mode)?.label ?? `${mode}s`
 
   return (
@@ -34,13 +34,22 @@ function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSi
           <button
             onClick={onBackToMenu}
             className="px-3 py-1.5 rounded-lg text-txt-untyped text-xs font-mono hover:text-txt-muted hover:bg-bg-hover transition-all duration-150 mr-1"
-            title="Back to menu (Esc)"
           >
             esc
           </button>
         )}
 
-        {/* Auth section */}
+        {/* Leaderboard link */}
+        {screen !== 'test' && (
+          <button
+            onClick={onLeaderboardClick}
+            className="px-3 py-1.5 rounded-lg text-txt-muted text-sm font-mono hover:text-txt-base hover:bg-bg-hover transition-all duration-150"
+          >
+            leaderboard
+          </button>
+        )}
+
+        {/* Auth */}
         {user ? (
           <div className="flex items-center gap-2">
             <span className="hidden sm:block text-txt-sub font-mono text-sm">
