@@ -88,7 +88,7 @@ function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsCh
         "
       >
         start test
-        <span className="text-white/60 font-mono text-sm group-hover:text-white/90 transition-colors">→</span>
+        <span className="text-btn-text/60 font-mono text-sm group-hover:text-btn-text/90 transition-colors">→</span>
       </button>
 
       {/* Keyboard hints */}
