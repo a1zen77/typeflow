@@ -3,7 +3,7 @@ import WpmChart from './WpmChart.jsx'
 import SaveScorePrompt from './SaveScorePrompt.jsx'
 import { getPersonalBest } from '../utils/storage.js'
 
-function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore, isSaving, isSaved }) {
+function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore, isSaving, isSaved, btnText }) {
   const { wpm, accuracy, errors, snapshots, duration, isNewPB } = data
   const [showSavePrompt, setShowSavePrompt] = useState(!user)
 
@@ -77,8 +77,9 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
           <button
             onClick={onSaveScore}
             disabled={isSaving}
+            style={{ color: btnText }}
             className="
-              px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-btn-text font-mono text-sm
+              px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand font-mono text-sm
               transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
@@ -101,6 +102,7 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
           wpm={wpm}
           onSignInClick={onSignInClick}
           onSkip={() => setShowSavePrompt(false)}
+          btnText={btnText}
         />
       )}
 
@@ -108,26 +110,16 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={onRetry}
+          style={{ color: btnText }}
           className="
             flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-sm
+            bg-brand/90 hover:bg-brand font-sans font-medium text-sm
             shadow-[0_0_24px_rgba(124,106,247,0.2)] hover:shadow-[0_0_32px_rgba(124,106,247,0.35)]
             transition-all duration-200 active:scale-[0.98]
           "
         >
           try again
-          <span className="font-mono text-white/60">↺</span>
-        </button>
-        <button
-          onClick={onChangeMode}
-          className="
-            flex items-center gap-2 px-6 py-3 rounded-xl
-            border border-white/10 text-txt-base font-sans font-medium text-sm
-            hover:bg-bg-card hover:border-white/20
-            transition-all duration-200 active:scale-[0.98]
-          "
-        >
-          change mode
+          <span style={{ color: btnText, opacity: 0.6 }} className="font-mono">↺</span>
         </button>
       </div>
 

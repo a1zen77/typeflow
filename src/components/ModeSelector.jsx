@@ -80,15 +80,21 @@ function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsCh
       {/* Start button */}
       <button
         onClick={onStart}
+        style={{ color: btnText }}
         className="
           group flex items-center gap-3 px-8 py-3.5 rounded-xl
-          bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-base
+          bg-brand/90 hover:bg-brand font-sans font-medium text-base
           shadow-[0_0_30px_rgba(124,106,247,0.25)] hover:shadow-[0_0_40px_rgba(124,106,247,0.4)]
           transition-all duration-200 active:scale-[0.98]
         "
       >
         start test
-        <span className="text-btn-text/60 font-mono text-sm group-hover:text-btn-text/90 transition-colors">→</span>
+        <span
+          style={{ color: btnText, opacity: 0.6 }}
+          className="font-mono text-sm"
+        >
+          →
+        </span>
       </button>
 
       {/* Keyboard hints */}

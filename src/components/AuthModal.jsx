@@ -52,11 +52,9 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
         onClick={onClose}
       />
 
-      {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center z-50 px-4">
         <div className="w-full max-w-sm bg-bg-surface border border-white/10 rounded-2xl p-6 shadow-2xl animate-fade-up">
 
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-txt-bright font-sans font-medium text-lg">
               {success ? 'check your email' : tab === 'signin' ? 'sign in' : 'create account'}
@@ -69,7 +67,6 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
             </button>
           </div>
 
-          {/* Success state */}
           {success ? (
             <div className="space-y-4">
               <p className="text-txt-sub font-mono text-sm leading-relaxed">
@@ -78,64 +75,37 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
               </p>
               <button
                 onClick={() => { setSuccess(false); setTab('signin') }}
-                className="w-full py-2.5 rounded-xl bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-sm transition-all duration-200"
+                style={{ color: btnText }}
+                className="w-full py-2.5 rounded-xl bg-brand/90 hover:bg-brand font-sans font-medium text-sm transition-all duration-200"
               >
                 go to sign in
               </button>
             </div>
           ) : (
             <>
-              {/* Tabs */}
               <div className="flex gap-1 bg-bg-card rounded-lg p-1 mb-5">
                 <TabBtn label="sign in" active={tab === 'signin'} onClick={() => { setTab('signin'); setError(null) }} />
                 <TabBtn label="sign up" active={tab === 'signup'} onClick={() => { setTab('signup'); setError(null) }} />
               </div>
 
-              {/* Form */}
               <div className="space-y-3" onKeyDown={handleKeyDown}>
-
                 {tab === 'signup' && (
-                  <Input
-                    label="username"
-                    type="text"
-                    value={username}
-                    onChange={setUsername}
-                    placeholder="yourname"
-                    autoFocus
-                  />
+                  <Input label="username" type="text" value={username} onChange={setUsername} placeholder="yourname" autoFocus />
                 )}
+                <Input label="email" type="email" value={email} onChange={setEmail} placeholder="you@example.com" autoFocus={tab === 'signin'} />
+                <Input label="password" type="password" value={password} onChange={setPassword} placeholder="••••••••" />
 
-                <Input
-                  label="email"
-                  type="email"
-                  value={email}
-                  onChange={setEmail}
-                  placeholder="you@example.com"
-                  autoFocus={tab === 'signin'}
-                />
-
-                <Input
-                  label="password"
-                  type="password"
-                  value={password}
-                  onChange={setPassword}
-                  placeholder="••••••••"
-                />
-
-                {/* Error */}
                 {error && (
-                  <p className="text-accent-error font-mono text-xs pt-1">
-                    {error}
-                  </p>
+                  <p className="text-accent-error font-mono text-xs pt-1">{error}</p>
                 )}
 
-                {/* Submit */}
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
+                  style={{ color: btnText }}
                   className="
                     w-full py-2.5 rounded-xl mt-2
-                    bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-sm
+                    bg-brand/90 hover:bg-brand font-sans font-medium text-sm
                     shadow-[0_0_20px_rgba(124,106,247,0.2)] hover:shadow-[0_0_28px_rgba(124,106,247,0.35)]
                     transition-all duration-200 active:scale-[0.98]
                     disabled:opacity-50 disabled:cursor-not-allowed
@@ -146,7 +116,6 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
                     : tab === 'signin' ? 'sign in' : 'create account'
                   }
                 </button>
-
               </div>
             </>
           )}

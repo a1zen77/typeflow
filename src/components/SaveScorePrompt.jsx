@@ -1,13 +1,4 @@
-function SaveScorePrompt({ wpm, onSignInClick, onSkip, onSave, isSaving, isSaved }) {
-  if (isSaved) {
-    return (
-      <div className="w-full bg-accent-correct/8 border border-accent-correct/20 rounded-2xl p-4 flex items-center justify-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-accent-correct" />
-        <span className="text-accent-correct font-mono text-sm">score saved to leaderboard</span>
-      </div>
-    )
-  }
-
+function SaveScorePrompt({ wpm, onSignInClick, onSkip, btnText }) {
   return (
     <div className="w-full bg-bg-surface border border-white/8 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="text-center sm:text-left">
@@ -27,7 +18,8 @@ function SaveScorePrompt({ wpm, onSignInClick, onSkip, onSave, isSaving, isSaved
         </button>
         <button
           onClick={onSignInClick}
-          className="px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-btn-text font-mono text-sm transition-all duration-200 active:scale-[0.98]"
+          style={{ color: btnText }}
+          className="px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand font-mono text-sm transition-all duration-200 active:scale-[0.98]"
         >
           sign in
         </button>
