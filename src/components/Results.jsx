@@ -89,14 +89,6 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
         </div>
       )}
 
-      {/* Score saved confirmation */}
-      {user && isSaved && (
-        <div className="w-full bg-accent-correct/8 border border-accent-correct/20 rounded-2xl p-4 flex items-center justify-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent-correct" />
-          <span className="text-accent-correct font-mono text-sm">score saved to leaderboard</span>
-        </div>
-      )}
-
       {/* Save prompt — logged out users */}
       {!user && showSavePrompt && (
         <SaveScorePrompt
