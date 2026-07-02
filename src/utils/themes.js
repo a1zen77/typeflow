@@ -27,8 +27,8 @@ export const THEMES = {
   },
 
   terminal: {
-    name:  'terminal',
-    label: 'Terminal',
+    name:    'terminal',
+    label:   'Terminal',
     preview: ['#0A0A0A', '#00FF41', '#00CC33'],
     vars: {
       '--bg-base':    '#0A0A0A',
@@ -46,8 +46,8 @@ export const THEMES = {
       '--accent-error':   '#FF4444',
       '--accent-cursor':  '#00FF41',
       '--accent-gold':    '#FFD700',
-      '--brand':          '#00CC33',
-      '--btn-text':       '#000000',
+      '--brand':          '#00FF41',   // ← brightened from #00CC33
+      '--btn-text':       '#0A0A0A',   // ← black text on bright green button
 
       '--grid-color': 'rgba(0, 255, 65, 0.03)',
     }
