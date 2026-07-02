@@ -5,15 +5,16 @@ import TypingArea from './components/TypingArea.jsx'
 import StatsBar from './components/StatsBar.jsx'
 import Results from './components/Results.jsx'
 import AuthModal from './components/AuthModal.jsx'
+import ToastContainer from './components/ToastContainer.jsx'
 import Leaderboard from './pages/Leaderboard.jsx'
-
 import { useTypingEngine } from './hooks/useTypingEngine.js'
 import { useTimer } from './hooks/useTimer.js'
 import { usePersonalBest } from './hooks/usePersonalBest.js'
 import { useAuth } from './hooks/useAuth.js'
 import { useScores } from './hooks/useScores.js'
-import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
+import { useToast } from './hooks/useToast.js'
 import { useTheme } from './hooks/useTheme.js'
+import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
 
 export const MODES = [
   { label: '15s', value: 15 },
@@ -43,10 +44,11 @@ function App() {
   const engineRef           = useRef(null)
   const timerRef            = useRef(null)
 
-  const { checkAndSave } = usePersonalBest()
+  const { checkAndSave }                           = usePersonalBest()
   const { user, profile, signUp, signIn, signOut } = useAuth()
-  const { saveScore } = useScores()
-  const { themeName, setTheme, btnText } = useTheme()
+  const { saveScore }                              = useScores()
+  const { toasts, toast, removeToast }             = useToast()
+  const { themeName, setTheme, btnText }           = useTheme()
 
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
@@ -135,22 +137,50 @@ function App() {
   const handleSaveScore = useCallback(async () => {
     if (!user || !resultData || isSaved) return
     setIsSaving(true)
-    await saveScore(user.id, {
+    const { error } = await saveScore(user.id, {
       wpm:      resultData.wpm,
       accuracy: resultData.accuracy,
       errors:   resultData.errors,
       duration: resultData.duration,
     })
     setIsSaving(false)
-    setIsSaved(true)
-  }, [user, resultData, isSaved, saveScore])
+    if (error) {
+      toast.error('failed to save score — try again')
+    } else {
+      setIsSaved(true)
+      toast.success('score saved to leaderboard!')
+    }
+  }, [user, resultData, isSaved, saveScore, toast])
 
-  // Auto-save score when user is logged in and test ends
+  // Auto save when logged in
   useEffect(() => {
     if (user && resultData && screen === SCREENS.RESULT && !isSaved) {
       handleSaveScore()
     }
   }, [screen, resultData, user])
+
+  // Sign in toast
+  const handleSignIn = useCallback(async (email, password) => {
+    const { data, error } = await signIn(email, password)
+    if (!error) {
+      toast.success('signed in successfully')
+      setShowAuthModal(false)
+    }
+    return { data, error }
+  }, [signIn, toast])
+
+  // Sign up toast
+  const handleSignUp = useCallback(async (email, password, username) => {
+    const { data, error } = await signUp(email, password, username)
+    if (!error) toast.info('account created — check your email!')
+    return { data, error }
+  }, [signUp, toast])
+
+  // Sign out toast
+  const handleSignOut = useCallback(async () => {
+    await signOut()
+    toast.info('signed out')
+  }, [signOut, toast])
 
   useEffect(() => {
     if (screen !== SCREENS.RESULT) return
@@ -180,7 +210,7 @@ function App() {
           user={user}
           profile={profile}
           onSignInClick={() => setShowAuthModal(true)}
-          onSignOut={signOut}
+          onSignOut={handleSignOut}
           onLeaderboardClick={() => setScreen(SCREENS.LEADERBOARD)}
           themeName={themeName}
           onThemeChange={setTheme}
@@ -188,18 +218,18 @@ function App() {
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12">
 
-        {screen === SCREENS.SELECT && (
-          <ModeSelector
-            key={screen}
-            modes={MODES}
-            selected={mode}
-            onSelect={handleSelectMode}
-            onStart={handleStartTest}
-            options={testOptions}
-            onOptionsChange={setTestOptions}
-            btnText={btnText}
-          />
-        )}
+          {screen === SCREENS.SELECT && (
+            <ModeSelector
+              key={screen}
+              modes={MODES}
+              selected={mode}
+              onSelect={handleSelectMode}
+              onStart={handleStartTest}
+              options={testOptions}
+              onOptionsChange={setTestOptions}
+              btnText={btnText}
+            />
+          )}
 
           {screen === SCREENS.TEST && (
             <div className="animate-fade-up w-full max-w-3xl px-2 sm:px-0">
@@ -251,14 +281,18 @@ function App() {
         </footer>
       </div>
 
+      {/* Auth modal */}
       {showAuthModal && (
         <AuthModal
-          onSignUp={signUp}
-          onSignIn={signIn}
+          onSignUp={handleSignUp}
+          onSignIn={handleSignIn}
           onClose={() => setShowAuthModal(false)}
           btnText={btnText}
         />
       )}
+
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
 
     </div>
   )
