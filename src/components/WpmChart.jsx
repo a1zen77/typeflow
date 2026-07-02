@@ -3,7 +3,20 @@ import {
   ResponsiveContainer, CartesianGrid
 } from 'recharts'
 
+// Read current theme CSS variables directly from the document root
+function getCSSVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+}
+
 function WpmChart({ snapshots }) {
+  // Read theme colors at render time so they update when theme changes
+  const brand        = getCSSVar('--brand')
+  const bgSurface    = getCSSVar('--bg-surface')
+  const bgCard       = getCSSVar('--bg-card')
+  const txtUntyped   = getCSSVar('--txt-untyped')
+  const txtSub       = getCSSVar('--txt-sub')
+  const txtBase      = getCSSVar('--txt-base')
+
   if (!snapshots || snapshots.length === 0) {
     return (
       <div className="w-full h-32 flex items-center justify-center text-txt-untyped font-mono text-sm">
@@ -22,42 +35,43 @@ function WpmChart({ snapshots }) {
       <LineChart data={data} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
         <CartesianGrid
           strokeDasharray="3 3"
-          stroke="rgba(255,255,255,0.04)"
+          stroke={txtUntyped}
+          strokeOpacity={0.3}
           vertical={false}
         />
         <XAxis
           dataKey="second"
-          tick={{ fill: '#5A5A7A', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+          tick={{ fill: txtSub, fontSize: 11, fontFamily: 'JetBrains Mono' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#5A5A7A', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+          tick={{ fill: txtSub, fontSize: 11, fontFamily: 'JetBrains Mono' }}
           axisLine={false}
           tickLine={false}
           domain={['auto', 'auto']}
         />
         <Tooltip
           contentStyle={{
-            background: '#1C1C27',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: bgCard,
+            border: `1px solid ${txtUntyped}`,
             borderRadius: '8px',
             fontFamily: 'JetBrains Mono',
             fontSize: '12px',
-            color: '#C8C8E0',
+            color: txtBase,
           }}
-          itemStyle={{ color: '#7C6AF7' }}
-          labelStyle={{ color: '#8888AA', marginBottom: '4px' }}
+          itemStyle={{ color: brand }}
+          labelStyle={{ color: txtSub, marginBottom: '4px' }}
           formatter={(val) => [`${val} wpm`, '']}
-          cursor={{ stroke: 'rgba(124,106,247,0.2)', strokeWidth: 1 }}
+          cursor={{ stroke: brand, strokeWidth: 1, strokeOpacity: 0.3 }}
         />
         <Line
           type="monotone"
           dataKey="wpm"
-          stroke="#7C6AF7"
+          stroke={brand}
           strokeWidth={2}
-          dot={{ fill: '#7C6AF7', r: 3, strokeWidth: 0 }}
-          activeDot={{ fill: '#7C6AF7', r: 5, strokeWidth: 0 }}
+          dot={{ fill: brand, r: 3, strokeWidth: 0 }}
+          activeDot={{ fill: brand, r: 5, strokeWidth: 0 }}
         />
       </LineChart>
     </ResponsiveContainer>
