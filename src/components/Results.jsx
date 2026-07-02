@@ -78,7 +78,7 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
             onClick={onSaveScore}
             disabled={isSaving}
             className="
-              px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-white font-mono text-sm
+              px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-btn-text font-mono text-sm
               transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
@@ -110,7 +110,7 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
           onClick={onRetry}
           className="
             flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-brand/90 hover:bg-brand text-white font-sans font-medium text-sm
+            bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-sm
             shadow-[0_0_24px_rgba(124,106,247,0.2)] hover:shadow-[0_0_32px_rgba(124,106,247,0.35)]
             transition-all duration-200 active:scale-[0.98]
           "

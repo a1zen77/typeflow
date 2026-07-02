@@ -78,7 +78,7 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
               </p>
               <button
                 onClick={() => { setSuccess(false); setTab('signin') }}
-                className="w-full py-2.5 rounded-xl bg-brand/90 hover:bg-brand text-white font-sans font-medium text-sm transition-all duration-200"
+                className="w-full py-2.5 rounded-xl bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-sm transition-all duration-200"
               >
                 go to sign in
               </button>
@@ -135,7 +135,7 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
                   disabled={loading}
                   className="
                     w-full py-2.5 rounded-xl mt-2
-                    bg-brand/90 hover:bg-brand text-white font-sans font-medium text-sm
+                    bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-sm
                     shadow-[0_0_20px_rgba(124,106,247,0.2)] hover:shadow-[0_0_28px_rgba(124,106,247,0.35)]
                     transition-all duration-200 active:scale-[0.98]
                     disabled:opacity-50 disabled:cursor-not-allowed

@@ -82,7 +82,7 @@ function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsCh
         onClick={onStart}
         className="
           group flex items-center gap-3 px-8 py-3.5 rounded-xl
-          bg-brand/90 hover:bg-brand text-white font-sans font-medium text-base
+          bg-brand/90 hover:bg-brand text-btn-text font-sans font-medium text-base
           shadow-[0_0_30px_rgba(124,106,247,0.25)] hover:shadow-[0_0_40px_rgba(124,106,247,0.4)]
           transition-all duration-200 active:scale-[0.98]
         "

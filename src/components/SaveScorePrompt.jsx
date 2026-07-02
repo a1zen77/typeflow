@@ -27,7 +27,7 @@ function SaveScorePrompt({ wpm, onSignInClick, onSkip, onSave, isSaving, isSaved
         </button>
         <button
           onClick={onSignInClick}
-          className="px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-white font-mono text-sm transition-all duration-200 active:scale-[0.98]"
+          className="px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand text-btn-text font-mono text-sm transition-all duration-200 active:scale-[0.98]"
         >
           sign in
         </button>
