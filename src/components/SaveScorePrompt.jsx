@@ -18,8 +18,11 @@ function SaveScorePrompt({ wpm, onSignInClick, onSkip, btnText }) {
         </button>
         <button
           onClick={onSignInClick}
-          style={{ color: btnText }}
-          className="px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand font-mono text-sm transition-all duration-200 active:scale-[0.98]"
+          style={{ color: btnText, backgroundColor: 'var(--brand)' }}
+          className="
+            px-5 py-2 rounded-lg font-mono text-sm
+            transition-all duration-200 active:scale-[0.98]
+          "
         >
           sign in
         </button>

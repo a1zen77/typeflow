@@ -77,10 +77,11 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
           <button
             onClick={onSaveScore}
             disabled={isSaving}
-            style={{ color: btnText }}
+            style={{ color: btnText, backgroundColor: 'var(--brand)' }}
             className="
-              px-5 py-2 rounded-lg bg-brand/90 hover:bg-brand font-mono text-sm
-              transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
+              px-5 py-2 rounded-lg font-mono text-sm
+              transition-all duration-200 active:scale-[0.98]
+              disabled:opacity-50 disabled:cursor-not-allowed
             "
           >
             {isSaving ? 'saving...' : 'save score'}
@@ -110,11 +111,10 @@ function Results({ data, onRetry, onChangeMode, user, onSignInClick, onSaveScore
       <div className="flex items-center justify-center gap-3">
         <button
           onClick={onRetry}
-          style={{ color: btnText }}
+          style={{ color: btnText, backgroundColor: 'var(--brand)' }}
           className="
             flex items-center gap-2 px-6 py-3 rounded-xl
-            bg-brand/90 hover:bg-brand font-sans font-medium text-sm
-            shadow-[0_0_24px_rgba(124,106,247,0.2)] hover:shadow-[0_0_32px_rgba(124,106,247,0.35)]
+            font-sans font-medium text-sm
             transition-all duration-200 active:scale-[0.98]
           "
         >

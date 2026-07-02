@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function AuthModal({ onSignUp, onSignIn, onClose }) {
+function AuthModal({ onSignUp, onSignIn, onClose, btnText }) {
   const [tab,      setTab]      = useState('signin') // 'signin' | 'signup'
   const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
@@ -75,8 +75,8 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
               </p>
               <button
                 onClick={() => { setSuccess(false); setTab('signin') }}
-                style={{ color: btnText }}
-                className="w-full py-2.5 rounded-xl bg-brand/90 hover:bg-brand font-sans font-medium text-sm transition-all duration-200"
+                style={{ color: btnText, backgroundColor: 'var(--brand)' }}
+                className="w-full py-2.5 rounded-xl font-sans font-medium text-sm transition-all duration-200"
               >
                 go to sign in
               </button>
@@ -102,11 +102,10 @@ function AuthModal({ onSignUp, onSignIn, onClose }) {
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
-                  style={{ color: btnText }}
+                  style={{ color: btnText, backgroundColor: 'var(--brand)' }}
                   className="
                     w-full py-2.5 rounded-xl mt-2
-                    bg-brand/90 hover:bg-brand font-sans font-medium text-sm
-                    shadow-[0_0_20px_rgba(124,106,247,0.2)] hover:shadow-[0_0_28px_rgba(124,106,247,0.35)]
+                    font-sans font-medium text-sm
                     transition-all duration-200 active:scale-[0.98]
                     disabled:opacity-50 disabled:cursor-not-allowed
                   "
