@@ -23,6 +23,7 @@
     --brand:          #7C6AF7;
 
     --grid-color: rgba(124, 106, 247, 0.03);
+    --btn-text: #FFFFFF;
   }
 
   *, *::before, *::after {
@@ -98,5 +99,9 @@
 
   .typing-font span {
     transition: color 60ms ease;
+  }
+  /* Brand button text — adapts per theme */
+  .btn-text {
+    color: var(--btn-text);
   }
 }

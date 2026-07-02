@@ -20,6 +20,7 @@ export const THEMES = {
       '--accent-cursor':  '#7C6AF7',
       '--accent-gold':    '#FBBF24',
       '--brand':          '#7C6AF7',
+      '--btn-text':       '#FFFFFF',
 
       '--grid-color': 'rgba(124, 106, 247, 0.03)',
     }
@@ -46,6 +47,7 @@ export const THEMES = {
       '--accent-cursor':  '#00FF41',
       '--accent-gold':    '#FFD700',
       '--brand':          '#00CC33',
+      '--btn-text':       '#000000',
 
       '--grid-color': 'rgba(0, 255, 65, 0.03)',
     }
@@ -72,6 +74,7 @@ export const THEMES = {
       '--accent-cursor':  '#C8860A',
       '--accent-gold':    '#C8860A',
       '--brand':          '#C8860A',
+      '--btn-text':       '#FFFFFF',
 
       '--grid-color': 'rgba(200, 134, 10, 0.05)',
     }
@@ -98,6 +101,7 @@ export const THEMES = {
       '--accent-cursor':  '#38BDF8',
       '--accent-gold':    '#FBBF24',
       '--brand':          '#38BDF8',
+      '--btn-text':       '#FFFFFF',
 
       '--grid-color': 'rgba(56, 189, 248, 0.03)',
     }
@@ -124,6 +128,7 @@ export const THEMES = {
       '--accent-cursor':  '#F472B6',
       '--accent-gold':    '#FCD34D',
       '--brand':          '#F472B6',
+      '--btn-text':       '#FFFFFF',
 
       '--grid-color': 'rgba(244, 114, 182, 0.04)',
     }

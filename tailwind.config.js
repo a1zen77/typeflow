@@ -30,6 +30,9 @@ export default {
           cursor:  'var(--accent-cursor)',
           gold:    'var(--accent-gold)',
         },
+        btn: {
+          text: 'var(--btn-text)',
+        },
         brand: 'var(--brand)',
       },
       keyframes: {
