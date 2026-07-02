@@ -73,7 +73,7 @@ function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSi
         ) : (
           <button
             onClick={onSignInClick}
-            className="px-4 py-1.5 rounded-lg text-txt-base text-sm font-mono border border-white/10 hover:bg-bg-card hover:border-white/20 transition-all duration-150"
+            className="px-4 py-1.5 rounded-lg text-txt-base text-sm font-mono border border-txt-muted/30 hover:bg-bg-card hover:border-txt-muted/50 transition-all duration-150"
           >
             sign in
           </button>

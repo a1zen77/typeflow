@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { getPersonalBest } from '../utils/storage.js'
 
-function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsChange }) {
+function ModeSelector({ modes, selected, onSelect, onStart, options, onOptionsChange, btnText }) {
 
   useEffect(() => {
     const handleKey = (e) => {
