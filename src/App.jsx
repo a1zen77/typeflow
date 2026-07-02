@@ -6,12 +6,14 @@ import StatsBar from './components/StatsBar.jsx'
 import Results from './components/Results.jsx'
 import AuthModal from './components/AuthModal.jsx'
 import Leaderboard from './pages/Leaderboard.jsx'
+
 import { useTypingEngine } from './hooks/useTypingEngine.js'
 import { useTimer } from './hooks/useTimer.js'
 import { usePersonalBest } from './hooks/usePersonalBest.js'
 import { useAuth } from './hooks/useAuth.js'
 import { useScores } from './hooks/useScores.js'
 import { calcWPM, calcAccuracy } from './utils/wpmCalc.js'
+import { useTheme } from './hooks/useTheme.js'
 
 export const MODES = [
   { label: '15s', value: 15 },
@@ -41,9 +43,10 @@ function App() {
   const engineRef           = useRef(null)
   const timerRef            = useRef(null)
 
-  const { checkAndSave }                         = usePersonalBest()
+  const { checkAndSave } = usePersonalBest()
   const { user, profile, signUp, signIn, signOut } = useAuth()
-  const { saveScore }                            = useScores()
+  const { saveScore } = useScores()
+  const { themeName, setTheme } = useTheme()
 
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
@@ -179,6 +182,8 @@ function App() {
           onSignInClick={() => setShowAuthModal(true)}
           onSignOut={signOut}
           onLeaderboardClick={() => setScreen(SCREENS.LEADERBOARD)}
+          themeName={themeName}
+          onThemeChange={setTheme}
         />
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12">
