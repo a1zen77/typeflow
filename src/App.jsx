@@ -46,7 +46,7 @@ function App() {
   const { checkAndSave } = usePersonalBest()
   const { user, profile, signUp, signIn, signOut } = useAuth()
   const { saveScore } = useScores()
-  const { themeName, setTheme } = useTheme()
+  const { themeName, setTheme, btnText } = useTheme()
 
   const handleTimerExpire = useCallback(() => {
     clearInterval(snapshotIntervalRef.current)
@@ -188,17 +188,18 @@ function App() {
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 py-6 sm:py-12">
 
-          {screen === SCREENS.SELECT && (
-            <ModeSelector
-              key={screen}
-              modes={MODES}
-              selected={mode}
-              onSelect={handleSelectMode}
-              onStart={handleStartTest}
-              options={testOptions}
-              onOptionsChange={setTestOptions}
-            />
-          )}
+        {screen === SCREENS.SELECT && (
+          <ModeSelector
+            key={screen}
+            modes={MODES}
+            selected={mode}
+            onSelect={handleSelectMode}
+            onStart={handleStartTest}
+            options={testOptions}
+            onOptionsChange={setTestOptions}
+            btnText={btnText}
+          />
+        )}
 
           {screen === SCREENS.TEST && (
             <div className="animate-fade-up w-full max-w-3xl px-2 sm:px-0">
@@ -231,6 +232,7 @@ function App() {
               onSaveScore={handleSaveScore}
               isSaving={isSaving}
               isSaved={isSaved}
+              btnText={btnText}
             />
           )}
 
@@ -254,6 +256,7 @@ function App() {
           onSignUp={signUp}
           onSignIn={signIn}
           onClose={() => setShowAuthModal(false)}
+          btnText={btnText}
         />
       )}
 

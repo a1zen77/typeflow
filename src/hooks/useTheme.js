@@ -8,7 +8,6 @@ export function useTheme() {
     return localStorage.getItem(STORAGE_KEY) ?? DEFAULT_THEME
   })
 
-  // Apply CSS variables to :root whenever theme changes
   const applyTheme = useCallback((name) => {
     const theme = THEMES[name]
     if (!theme) return
@@ -32,6 +31,7 @@ export function useTheme() {
   return {
     themeName,
     theme: THEMES[themeName],
+    btnText: THEMES[themeName]?.vars['--btn-text'] ?? '#FFFFFF',
     setTheme,
   }
 }
