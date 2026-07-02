@@ -1,6 +1,7 @@
 import { MODES } from '../App.jsx'
+import ThemePicker from './ThemePicker.jsx'
 
-function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSignOut, onLeaderboardClick }) {
+function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSignOut, onLeaderboardClick, themeName, onThemeChange }) {
   const modeLabel = MODES.find(m => m.value === mode)?.label ?? `${mode}s`
 
   return (
@@ -30,6 +31,7 @@ function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSi
 
       {/* Right side */}
       <nav className="flex items-center gap-2">
+
         {screen === 'test' && (
           <button
             onClick={onBackToMenu}
@@ -39,7 +41,7 @@ function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSi
           </button>
         )}
 
-        {/* Leaderboard link */}
+        {/* Leaderboard */}
         {screen !== 'test' && (
           <button
             onClick={onLeaderboardClick}
@@ -48,6 +50,12 @@ function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSi
             leaderboard
           </button>
         )}
+
+        {/* Theme picker */}
+        <ThemePicker
+          currentTheme={themeName}
+          onThemeChange={onThemeChange}
+        />
 
         {/* Auth */}
         {user ? (
@@ -72,7 +80,7 @@ function Header({ mode, screen, onBackToMenu, user, profile, onSignInClick, onSi
         )}
 
         <a
-          href="https://github.com/YOUR_USERNAME/typeflow"
+          href="https://github.com/a1zen77/typeflow"
           target="_blank"
           rel="noopener noreferrer"
           className="px-3 py-1.5 rounded-lg text-txt-muted text-sm font-mono hover:text-txt-base hover:bg-bg-hover transition-all duration-150"
