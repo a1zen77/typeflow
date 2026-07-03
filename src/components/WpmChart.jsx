@@ -1,21 +1,18 @@
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip,
+  AreaChart, Area, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid
 } from 'recharts'
 
-// Read current theme CSS variables directly from the document root
 function getCSSVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
 
 function WpmChart({ snapshots }) {
-  // Read theme colors at render time so they update when theme changes
-  const brand        = getCSSVar('--brand')
-  const bgSurface    = getCSSVar('--bg-surface')
-  const bgCard       = getCSSVar('--bg-card')
-  const txtUntyped   = getCSSVar('--txt-untyped')
-  const txtSub       = getCSSVar('--txt-sub')
-  const txtBase      = getCSSVar('--txt-base')
+  const brand      = getCSSVar('--brand')
+  const bgCard     = getCSSVar('--bg-card')
+  const txtUntyped = getCSSVar('--txt-untyped')
+  const txtSub     = getCSSVar('--txt-sub')
+  const txtBase    = getCSSVar('--txt-base')
 
   if (!snapshots || snapshots.length === 0) {
     return (
@@ -32,7 +29,13 @@ function WpmChart({ snapshots }) {
 
   return (
     <ResponsiveContainer width="100%" height={180}>
-      <LineChart data={data} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, left: -24, bottom: 0 }}>
+        <defs>
+          <linearGradient id="wpmGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%"  stopColor={brand} stopOpacity={0.2} />
+            <stop offset="95%" stopColor={brand} stopOpacity={0}   />
+          </linearGradient>
+        </defs>
         <CartesianGrid
           strokeDasharray="3 3"
           stroke={txtUntyped}
@@ -65,15 +68,16 @@ function WpmChart({ snapshots }) {
           formatter={(val) => [`${val} wpm`, '']}
           cursor={{ stroke: brand, strokeWidth: 1, strokeOpacity: 0.3 }}
         />
-        <Line
+        <Area
           type="monotone"
           dataKey="wpm"
           stroke={brand}
           strokeWidth={2}
+          fill="url(#wpmGradient)"
           dot={{ fill: brand, r: 3, strokeWidth: 0 }}
           activeDot={{ fill: brand, r: 5, strokeWidth: 0 }}
         />
-      </LineChart>
+      </AreaChart>
     </ResponsiveContainer>
   )
 }
