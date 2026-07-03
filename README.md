@@ -79,7 +79,7 @@ Gross WPM using the standard definition — every 5 characters (including spaces
 WPM = (correct characters / 5) / (elapsed time in minutes)
 ```
 
-Accuracy is calculated as:
+Accuracy is calculated using:
 ```
 Accuracy = (correct characters / total characters typed) × 100
 ```
