@@ -185,14 +185,30 @@ function App() {
   useEffect(() => {
     if (screen !== SCREENS.RESULT) return
     let tabPressed = false
+
     const handleKey = (e) => {
-      if (e.key === 'Escape') { handleBackToMenu(); return }
-      if (e.key === 'Tab') { e.preventDefault(); tabPressed = true; return }
-      if (e.key === 'Enter' && tabPressed) handleRetry()
+      if (e.key === 'Escape') {
+        handleBackToMenu()
+        return
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault()
+        e.stopPropagation()
+        tabPressed = true
+        return
+      }
+      if (e.key === 'Enter' && tabPressed) {
+        e.preventDefault()
+        handleRetry()
+        tabPressed = false
+        return
+      }
       tabPressed = false
     }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
+
+    // Capture phase intercepts Tab before browser default focus behaviour
+    window.addEventListener('keydown', handleKey, true)
+    return () => window.removeEventListener('keydown', handleKey, true)
   }, [screen, handleRetry, handleBackToMenu])
 
   useEffect(() => {
