@@ -28,7 +28,7 @@ function AuthModal({ onSignUp, onSignIn, onClose, btnText }) {
       if (error) {
         setError(error.message)
       } else {
-        setSuccess(true)
+        onClose()  // ← email verification disabled, close modal directly
       }
     } else {
       const { error } = await onSignIn(email, password)
